@@ -1,13 +1,21 @@
 package main
 
+import (
+	"auth/data"
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+)
+
 const webPort = "80"
 
 type Config struct {
-	DB *sql.DB
+	DB     *sql.DB
 	Models data.Models
 }
 
-func main () {
+func main() {
 	log.Println("Starting authentication service")
 
 	// TODO connect to DB
@@ -15,7 +23,7 @@ func main () {
 	app := Config{}
 
 	srv := &http.Server{
-		Addr : fmt.Sprintf(":%s", webPort)
+		Addr: fmt.Sprintf(":%s", webPort),
 	}
 
 	err := srv.ListenAndServe()

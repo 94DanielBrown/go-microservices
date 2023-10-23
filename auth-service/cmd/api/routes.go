@@ -1,8 +1,13 @@
 package main
 
+import (
+	"github.com/go-chi/cors"
+	"net/http"
+)
+
 func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
-	
+
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"https://*", "http://*"},
 		//AllowedOrigins:   []string{"*"},
