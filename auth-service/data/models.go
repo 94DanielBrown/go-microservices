@@ -88,6 +88,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
+	fmt.Printf("Email is: %s\n", email)
 	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at from users where email = $1`
 	fmt.Println(query)
 

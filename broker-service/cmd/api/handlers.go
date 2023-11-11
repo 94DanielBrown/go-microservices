@@ -40,6 +40,9 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 
 	switch requestPayload.Action {
 	case "auth":
+		app.authenticate(w, requestPayload.Auth)
+	default:
+		app.errorJSON(w, errors.New("Unknown acton"))
 
 	case "default":
 		app.errorJSON(w, errors.New("unknown action"))
@@ -67,7 +70,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 		app.errorJSON(w, errors.New("Invalid credentials"))
 		return
 	} else if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, errors.New(""))
+		app.errorJSON(w, errors.New(string(response.StatusCode)))
 		return
 	}
 

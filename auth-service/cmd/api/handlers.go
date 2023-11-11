@@ -15,12 +15,11 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
-		err := app.errorJSON(w, err, http.StatusBadRequest)
-		if err != nil {
-			return
-		}
+		app.errorJSON(w, err, http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println(requestPayload)
 
 	user, err := app.Models.User.GetByEmail(requestPayload.Email)
 	if err != nil {
@@ -28,6 +27,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, errors.New("Can't find email"), http.StatusBadRequest)
 		return
 	}
+	fmt.Println(user)
 
 	valid, err := user.PasswordMatches(requestPayload.Password)
 	if err != nil || !valid {
