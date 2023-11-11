@@ -25,7 +25,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	user, err := app.Models.User.GetByEmail(requestPayload.Email)
 	if err != nil {
 		fmt.Println(err)
-		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
+		app.errorJSON(w, errors.New("Can't find email"), http.StatusBadRequest)
 		return
 	}
 
