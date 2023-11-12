@@ -70,7 +70,8 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 		app.errorJSON(w, errors.New("Invalid credentials"))
 		return
 	} else if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, errors.New(string(response.StatusCode)))
+		errorMessage := fmt.Sprintf("Unexpected status code: %d", response.StatusCode)
+		app.errorJSON(w, errors.New(errorMessage))
 		return
 	}
 
