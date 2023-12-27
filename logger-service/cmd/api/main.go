@@ -5,13 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-)
-
-const (
-	webPort  = "80"
-	rpcPort  = "5001"
-	mongoURL = "mongodb://mongo:27017"
-	gRpcPort = "50001"
+	"logger/cmd/initializers"
 )
 
 var client *mongo.Client
@@ -20,6 +14,7 @@ type Config struct {
 }
 
 func main() {
+	initializers.LoadEnvVariables()
 	mongoClient, err := connectToMongo()
 	if err != nil {
 		log.Panic(err)
@@ -27,7 +22,7 @@ func main() {
 	client = mongoClient
 }
 
-func connectToMongo() (*mongo.Client, error) {
+func connectToDynamo() (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(mongoURL)
 	clientOptions.SetAuth(options.Credential{
 		Username: "admin",
