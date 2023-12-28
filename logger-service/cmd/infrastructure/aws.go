@@ -19,6 +19,7 @@ func NewAwsConfig() (aws.Config, error) {
 		awsSecretAccessKey,
 		"",
 	))
+
 	conf, err := config.LoadDefaultConfig(
 		context.Background(),
 		config.WithRegion(awsRegion),
