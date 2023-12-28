@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -8,6 +9,7 @@ import (
 	"logger/cmd/infrastructure"
 	"logger/cmd/initializers"
 	"logger/cmd/utils"
+	"time"
 )
 
 var client *mongo.Client
@@ -21,6 +23,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
 
 	// List tables
 	var tableNames []string
