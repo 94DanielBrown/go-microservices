@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"log"
 	"time"
 )
 
@@ -31,18 +32,48 @@ type LogEntry struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty" dynamodbav:"updated_at"`
 }
 
-func (l *LogEntry) Put(entry LogEntry) (*dynamodb.PutItemOutput, error) {
+func (l *LogEntry) Put(entry LogEntry) error {
 	av, err := attributevalue.MarshalMap(entry)
 	if err != nil {
 		fmt.Printf("Got error marshalling data: %s\n", err)
-		return nil, err
+		return err
 	}
 	// save chat to db
-	output, err := client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(""), Item: av,
+	_, err = client.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		TableName: aws.String("logs"), Item: av,
 	})
 	if err != nil {
-		fmt.Printf("Couldn't add item to table.: %v\n", err)
+		log.Println("Couldn't add item to table.: %v\n", err)
 	}
-	return output, err
+	return nil
+}
+
+func (l *LogEntry) All() ([]*LogEntry, error) {
+	// Define a slice to hold log entries
+	var logs []*LogEntry
+
+	// Create input parameters for the Scan operation
+	input := &dynamodb.ScanInput{
+		TableName: aws.String("logs"),
+	}
+
+	// Perform the Scan operation
+	paginator := dynamodb.NewScanPaginator(client, input)
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(context.Background())
+		if err != nil {
+			return nil, err
+		}
+
+		// Unmarshal items from the page to LogEntry objects
+		for _, item := range page.Items {
+			var logEntry LogEntry
+			if err := attributevalue.UnmarshalMap(item, &logEntry); err != nil {
+				return nil, err
+			}
+			logs = append(logs, &logEntry)
+		}
+	}
+
+	return logs, nil
 }
