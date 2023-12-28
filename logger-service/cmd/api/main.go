@@ -1,11 +1,13 @@
 package main
 
 import (
-	"context"
+	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"logger/cmd/infrastructure"
 	"logger/cmd/initializers"
+	"logger/cmd/utils"
 )
 
 var client *mongo.Client
@@ -15,26 +17,29 @@ type Config struct {
 
 func main() {
 	initializers.LoadEnvVariables()
-	mongoClient, err := connectToMongo()
+	client, err := connectToDynamo()
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
-	client = mongoClient
+
+	// List tables
+	var tableNames []string
+	tables, err := utils.ListTables(client)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		tableNames = tables.TableNames
+	}
+	fmt.Println(tableNames)
+
 }
 
-func connectToDynamo() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(mongoURL)
-	clientOptions.SetAuth(options.Credential{
-		Username: "admin",
-		Password: "password",
-	})
-
-	// connect
-	c, err := mongo.Connect(context.TODO(), clientOptions)
+func connectToDynamo() (*dynamodb.Client, error) {
+	config, err := infrastructure.NewAwsConfig()
 	if err != nil {
-		log.Println("Error connecting to mongo", err)
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return c, nil
+	client := infrastructure.NewDynamoDBClient(config)
+	return client, nil
 }
