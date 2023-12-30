@@ -1,18 +1,20 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+
 	"logger/cmd/infrastructure"
 	"logger/cmd/initializers"
-	"time"
+	"logger/data"
 )
 
 var client *mongo.Client
 
 type Config struct {
+	Models data.Models
 }
 
 func main() {
@@ -22,8 +24,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
+	app := Config{
+		Models: data.New(client),
+	}
+
+	err = app.Models.LogEntry.Put(
+		data.LogEntry{
+			ID:   "test",
+			Name: "test",
+			Data: "test",
+		})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 }
 
