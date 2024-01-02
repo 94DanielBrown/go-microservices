@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
+
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"logger/cmd/infrastructure"
 	"logger/cmd/initializers"
@@ -28,14 +31,27 @@ func main() {
 		Models: data.New(client),
 	}
 
+	uid := uuid.New()
 	err = app.Models.LogEntry.Put(
 		data.LogEntry{
-			ID:   "test",
-			Name: "test",
-			Data: "test",
+			UUID:      uid.String(),
+			Name:      "test",
+			Data:      "test",
+			CreatedAt: int(time.Now().Unix()),
+			UpdatedAt: int(time.Now().Unix()),
 		})
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	logs, err := app.Models.LogEntry.All()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%T\n", logs)
+
+	for _, log := range logs {
+		fmt.Printf("UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n", log.UUID, log.Name, log.Data, log.CreatedAt, log.UpdatedAt)
 	}
 
 }

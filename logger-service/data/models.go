@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"log"
-	"time"
 )
 
 var client *dynamodb.Client
@@ -25,11 +24,11 @@ type Models struct {
 }
 
 type LogEntry struct {
-	ID        string    `json:"id,omitempty" dynamodbav:"id"`
-	Name      string    `json:"name,omitempty" dynamodbav:"name"`
-	Data      string    `json:"data,omitempty" dynamodbav:"data"`
-	CreatedAt time.Time `json:"created_at,omitempty" dynamodbav:"created_at"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" dynamodbav:"updated_at"`
+	UUID      string `json:"uuid,omitempty" dynamodbav:"uuid"`
+	Name      string `json:"name,omitempty" dynamodbav:"name"`
+	Data      string `json:"data,omitempty" dynamodbav:"data"`
+	CreatedAt int    `json:"created_at,omitempty" dynamodbav:"created_at"`
+	UpdatedAt int    `json:"updated_at,omitempty" dynamodbav:"updated_at"`
 }
 
 func (l *LogEntry) Put(entry LogEntry) error {
