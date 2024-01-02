@@ -32,7 +32,7 @@ func main() {
 	}
 
 	uid := uuid.New()
-	err = app.Models.LogEntry.Put(
+	err = app.Models.LogEntry.PutItem(
 		data.LogEntry{
 			UUID:      uid.String(),
 			Name:      "test",
@@ -44,7 +44,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	logs, err := app.Models.LogEntry.All()
+	logs, err := app.Models.LogEntry.AllItems()
 	if err != nil {
 		fmt.Println(err)
 	}

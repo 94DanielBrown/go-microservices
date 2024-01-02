@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"log"
 )
 
@@ -31,7 +32,8 @@ type LogEntry struct {
 	UpdatedAt int    `json:"updated_at,omitempty" dynamodbav:"updated_at"`
 }
 
-func (l *LogEntry) Put(entry LogEntry) error {
+// PutItem adds an item to the dynamodb table
+func (l *LogEntry) PutItem(entry LogEntry) error {
 	av, err := attributevalue.MarshalMap(entry)
 	if err != nil {
 		fmt.Printf("Got error marshalling data: %s\n", err)
@@ -47,16 +49,14 @@ func (l *LogEntry) Put(entry LogEntry) error {
 	return nil
 }
 
-func (l *LogEntry) All() ([]*LogEntry, error) {
-	// Define a slice to hold log entries
+// AllItems gets all items from the dynamodb table
+func (l *LogEntry) AllItems() ([]*LogEntry, error) {
 	var logs []*LogEntry
 
-	// Create input parameters for the Scan operation
 	input := &dynamodb.ScanInput{
 		TableName: aws.String("logs"),
 	}
 
-	// Perform the Scan operation
 	paginator := dynamodb.NewScanPaginator(client, input)
 	for paginator.HasMorePages() {
 		page, err := paginator.NextPage(context.Background())
@@ -75,4 +75,26 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 	}
 
 	return logs, nil
+}
+
+// GetItem gets an item by ID
+func (l *LogEntry) GetItem(uuid string) (*LogEntry, error) {
+	var logEntry LogEntry
+
+	input := &dynamodb.GetItemInput{
+		TableName: aws.String("logs"),
+		Key: map[string]types.AttributeValue{
+			"UUID": &types.AttributeValueMemberS{
+				Value: uuid,
+			},
+		},
+	}
+
+	data, err := client.GetItem(context.TODO(), input)
+	if err != nil {
+		return nil, err
+	}
+
+	//err := attributevalue.UnmarshalMap(data, &logEntry)
+	return nil, err
 }
