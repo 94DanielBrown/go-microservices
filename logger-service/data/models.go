@@ -95,6 +95,45 @@ func (l *LogEntry) GetItem(uuid string) (*LogEntry, error) {
 		return nil, err
 	}
 
-	//err := attributevalue.UnmarshalMap(data, &logEntry)
-	return nil, err
+	if data.Item == nil {
+		return nil, fmt.Errorf("no data found for UUID %s", uuid)
+	}
+
+	err = attributevalue.UnmarshalMap(data.Item, &logEntry)
+	return &logEntry, err
+}
+
+func (l *LogEntry) Query(uuid string) ([]*LogEntry, error) {
+	var logs []*LogEntry
+
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String("logs"),
+		KeyConditionExpression: aws.String("#uuidKey = :uuidVal"),
+		ExpressionAttributeNames: map[string]string{
+			"#uuidKey": "uuid",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":uuidVal": &types.AttributeValueMemberS{Value: uuid},
+		},
+	}
+
+	data, err := client.Query(context.TODO(), input)
+	if err != nil {
+		return nil, err
+	}
+
+	if data.Items == nil {
+		return nil, fmt.Errorf("no data found for UUID %s", uuid)
+	}
+
+	// Unmarshal items from the page to LogEntry objects
+	for _, item := range data.Items {
+		var logEntry LogEntry
+		if err := attributevalue.UnmarshalMap(item, &logEntry); err != nil {
+			return nil, err
+		}
+		logs = append(logs, &logEntry)
+	}
+
+	return logs, nil
 }
