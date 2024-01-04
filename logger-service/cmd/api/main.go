@@ -48,27 +48,27 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%T\n", logs)
 
 	for _, log := range logs {
 		fmt.Printf("UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n", log.UUID, log.Name, log.Data, log.CreatedAt, log.UpdatedAt)
 	}
 
-	//retrievedLog, err := app.Models.LogEntry.GetItem("0235440a-5617-446d-b8de-27a30b08b711")
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//
-	//// Print the details of the retrieved log entry
-	//fmt.Printf("Retrieved Log - UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n",
-	//	retrievedLog.UUID, retrievedLog.Name, retrievedLog.Data, retrievedLog.CreatedAt, retrievedLog.UpdatedAt)
+	//GetItem
+	retrievedLog, err := app.Models.LogEntry.GetItem("0235440a-5617-446d-b8de-27a30b08b711")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
+	// Print the details of the retrieved log entry
+	fmt.Printf("Retrieved Log - UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n",
+		retrievedLog.UUID, retrievedLog.Name, retrievedLog.Data, retrievedLog.CreatedAt, retrievedLog.UpdatedAt)
+
+	// Query
 	logs, err = app.Models.LogEntry.Query("0235440a-5617-446d-b8de-27a30b08b711")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%T\n", logs)
 
 	for _, log := range logs {
 		fmt.Printf("UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n", log.UUID, log.Name, log.Data, log.CreatedAt, log.UpdatedAt)

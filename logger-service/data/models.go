@@ -77,14 +77,14 @@ func (l *LogEntry) AllItems() ([]*LogEntry, error) {
 	return logs, nil
 }
 
-// GetItem gets an item by ID
+// GetItem gets an item by uuid and created_at
 func (l *LogEntry) GetItem(uuid string) (*LogEntry, error) {
 	var logEntry LogEntry
 
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String("logs"),
 		Key: map[string]types.AttributeValue{
-			"UUID": &types.AttributeValueMemberS{
+			"uuid": &types.AttributeValueMemberS{
 				Value: uuid,
 			},
 		},
@@ -103,6 +103,7 @@ func (l *LogEntry) GetItem(uuid string) (*LogEntry, error) {
 	return &logEntry, err
 }
 
+// Query gets item with by uuid
 func (l *LogEntry) Query(uuid string) ([]*LogEntry, error) {
 	var logs []*LogEntry
 
