@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -12,6 +13,10 @@ import (
 	"logger/cmd/infrastructure"
 	"logger/cmd/initializers"
 	"logger/data"
+)
+
+const (
+	webPort = "80"
 )
 
 var client *mongo.Client
@@ -72,6 +77,14 @@ func main() {
 
 	for _, log := range logs {
 		fmt.Printf("UUID: %s, Name: %s, Data: %s, CreatedAt: %d, UpdatedAt: %d\n", log.UUID, log.Name, log.Data, log.CreatedAt, log.UpdatedAt)
+	}
+
+}
+
+func (app *Config) serve() {
+	srv := &http.Server{
+		Addr: fmt.Sprintf(":%s", webPort),
+		Handler:
 	}
 
 }
